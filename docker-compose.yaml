@@ -1,11 +1,12 @@
 version: "3"
+
 services:
-  mysql-db:
+  mysql:
     container_name: mysql
     image: mysql:5.7.27
     volumes:
       - /mnt/mysql:/var/lib/mysql
-      - /home/centos/db_scripts:/docker-entrypoint-initdb.d/
+      - ./db_scripts:/docker-entrypoint-initdb.d/
     ports:
       - "3306:3306"
     environment:
@@ -21,6 +22,6 @@ services:
     container_name: api-server
     build: .
     depends_on:
-      - mysql-db
+      - mysql
     ports:
       - "5000:5000"
