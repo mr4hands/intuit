@@ -1,6 +1,7 @@
 import mysql.connector
 from configmodule.config import config
 
+
 mydb = mysql.connector.connect(
     host=config["database"]["host"],
     user=config["database"]["user"],
@@ -22,24 +23,6 @@ def get_transactions(userid):
     return myresult
 
 
-def set_api_transactions(userid, transactions_list):
-    mycursor = mydb.cursor()
-    sql = "INSERT INTO transactions (user_id, name, amount, description) VALUES (%s, %s, %s, %s)"
-    for transaction in transactions_list:
-        val = (userid, transaction["name"], transaction["amount"], transaction["description"])
-        mycursor.execute(sql, val)
-    mydb.commit()
-
-
-def set_web_transactions(userid, transactions_list):
-    mycursor = mydb.cursor()
-    sql = "INSERT INTO transactions (user_id, name, amount, description) VALUES (%s, %s, %s, %s)"
-    for transaction in transactions_list:
-        val = (userid, transaction["Id"], transaction["Balance"], transaction["description"])
-        mycursor.execute(sql, val)
-    mydb.commit()
-
-
 def get_user_channels(user_id):
     mycursor = mydb.cursor()
     sql = "SELECT `channel`, `type` FROM channels INNER JOIN `user_channels` ON " \
@@ -59,8 +42,21 @@ def get_channel_type(channel):
 
 def insert_financial_data(user_id, channel, aggregation_date, data):
     mycursor = mydb.cursor()
-    sql = "INSERT INTO user_channel_transactions (user_id, channel_id, last_aggregation_date, transactions_list, balance) " \
+    sql = "INSERT INTO user_channel_transactions (user_id, channel, last_aggregation_date, transactions_list, balance) " \
           "VALUES (%s, %s, %s, %s, %s)"
-    val = (user_id, channel, aggregation_date, data['balance'], data['transactions'])
+    print(data['balance'])
+    val = (user_id, channel, aggregation_date, str(data['transactions']),  data['balance'])
     mycursor.execute(sql, val)
+    mydb.commit()
+
+
+def insert_financial_data_list(user_id, channel, aggregation_date, data_list):
+    mycursor = mydb.cursor()
+    # turn autocommit off to enable bulk insert
+    mycursor.execute("SET autocommit=0")
+    for data in data_list:
+        sql = "INSERT INTO user_channel_transactions (user_id, channel, last_aggregation_date, transactions_list, balance) " \
+              "VALUES (%s, %s, %s, %s, %s)"
+        val = (user_id, channel, aggregation_date, str(data['transactions']), data['balance'])
+        mycursor.execute(sql, val)
     mydb.commit()

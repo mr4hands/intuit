@@ -17,25 +17,27 @@ def on_demand_data_aggregation():
     channel_type = mysql_connector.get_channel_type(channel)
     print(channel_type)
     if channel_type == "api":
-        transactions = api_scraper.fetch_financial_data(pre_last_date=last_aggregation, on_demand=True, user_id=user_id, channel=channel)
+        transactions = api_scraper.fetch_financial_data(pre_last_date=last_aggregation, test=True, user_id=user_id, channel=channel)
     elif channel_type == "website":
-        transactions = selenium_scraper.fetch_financial_data(pre_last_date=last_aggregation, on_demand=True, user_id=user_id, channel=channel)
+        transactions = selenium_scraper.fetch_financial_data(pre_last_date=last_aggregation, test=True, user_id=user_id, channel=channel)
 #   elif channel_type == "statment":
 #TODO
     return str(transactions)
 
-@app.route('/api/get_user_data/<user_id>', methods=['post'])
-def get_user_data(user_id):
+@app.route('/api/get_user_data/', methods=['post'])
+def get_user_data():
     request_json = request.get_json()
     user_id = request_json["user_id"]
     username = request_json["username"]
     last_aggregation = request_json["last_aggregation"]
     user_channels = mysql_connector.get_user_channels(user_id)
+    response = []
     for user_channel in user_channels:
         channel = user_channel[0]
         channel_type = user_channel[1]
         if channel_type == "api":
-            api_scraper.fetch_financial_data(last_date=last_aggregation, on_demand=True, user_id=user_id, channel=channel)
-        elif channel_type == "web":
-            api_scraper.fetch_financial_data(last_date=last_aggregation, on_demand=True, user_id=user_id, channel=channel)
+            response.append(api_scraper.fetch_financial_data(pre_last_date=last_aggregation, user_id=user_id, channel=channel))
+        elif channel_type == "website":
+            response.append(selenium_scraper.fetch_financial_data(pre_last_date=last_aggregation, user_id=user_id, channel=channel))
         # TODO statement
+    return str(response)

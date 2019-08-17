@@ -1,4 +1,5 @@
 import datetime
+from multiprocessing import Pool
 
 from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
@@ -12,10 +13,10 @@ from validators.validations import validate_types
 TIME_LIMIT = config['aggregation']['website_limit']
 SELENIUM_HUB = config['selenium']['selenium_hub']
 
-def fetch_financial_data(pre_last_date, user_id, channel, on_demand):
+def fetch_financial_data(pre_last_date, user_id, channel, test=False):
     if (isinstance(pre_last_date,str)):
         pre_last_date = datetime.datetime.strptime(pre_last_date, '%Y-%m-%d %H:%M:%S')
-    validate_types(user_id, channel, on_demand)
+    validate_types(user_id, channel)
     if user_id == '' or channel == '':
         raise MissingParamsError("some or all parameters are missing")
     if ((datetime.datetime.now() - pre_last_date).total_seconds() / 60 / 60 <= float(TIME_LIMIT)):
@@ -23,8 +24,10 @@ def fetch_financial_data(pre_last_date, user_id, channel, on_demand):
     selenium_hub = SELENIUM_HUB
     driver = webdriver.Remote(command_executor=selenium_hub, desired_capabilities=DesiredCapabilities.CHROME)
     driver.get(channel)
+    data = {}
+    data['balance'] = driver.find_element_by_xpath('/html/body/div/div[2]/div[1]/div[2]').text
     transactions = []
-    webelements = driver.find_elements_by_xpath("/html/body/div/div[3]/div")
+    webelements = driver.find_elements_by_xpath('/html/body/div/div[3]/div')
     for webelement in webelements:
         try:
             transaction_details = webelement.text.split("\n")
@@ -35,9 +38,11 @@ def fetch_financial_data(pre_last_date, user_id, channel, on_demand):
             transactions.append(transaction_data)
         except Exception as e:
             print(e)
-    if on_demand:
-        return transactions
-    else:
-        mysql_connector.set_web_transactions(user_id, transactions)
+    data['transactions'] = transactions
+    if not test:
+        mysql_connector.insert_financial_data,[user_id, channel, datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), data]
+    return data
+
+
 
 
