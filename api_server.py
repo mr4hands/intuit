@@ -17,9 +17,9 @@ def on_demand_data_aggregation():
     channel_type = mysql_connector.get_channel_type(channel)
     print(channel_type)
     if channel_type == "api":
-        transactions = api_scraper.fetch_transactions(pre_last_date=last_aggregation, on_demand=True, user_id=user_id, channel=channel)
+        transactions = api_scraper.fetch_financial_data(pre_last_date=last_aggregation, on_demand=True, user_id=user_id, channel=channel)
     elif channel_type == "website":
-        transactions = selenium_scraper.fetch_transactions(pre_last_date=last_aggregation, on_demand=True, user_id=user_id, channel=channel)
+        transactions = selenium_scraper.fetch_financial_data(pre_last_date=last_aggregation, on_demand=True, user_id=user_id, channel=channel)
 #   elif channel_type == "statment":
 #TODO
     return str(transactions)
@@ -35,7 +35,7 @@ def get_user_data(user_id):
         channel = user_channel[0]
         channel_type = user_channel[1]
         if channel_type == "api":
-            api_scraper.fetch_transactions(last_date=last_aggregation, on_demand=True, user_id=user_id, channel=channel)
+            api_scraper.fetch_financial_data(last_date=last_aggregation, on_demand=True, user_id=user_id, channel=channel)
         elif channel_type == "web":
-            api_scraper.fetch_transactions(last_date=last_aggregation, on_demand=True, user_id=user_id, channel=channel)
+            api_scraper.fetch_financial_data(last_date=last_aggregation, on_demand=True, user_id=user_id, channel=channel)
         # TODO statement
