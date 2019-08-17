@@ -1,0 +1,8 @@
+# these are requirements for the api container
+flask
+flask-jsonpify
+flask-sqlalchemy
+flask-restful
+requests
+selenium
+mysql-connector-python
