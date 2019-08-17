@@ -1,6 +1,7 @@
 # importing the requests library
 import datetime
 import requests
+from concurrent.futures import ThreadPoolExecutor as PoolExecutor
 
 from configmodule.config import config
 from connectors import mysql_connector
@@ -17,14 +18,15 @@ def fetch_financial_data(pre_last_date, user_id, channel, on_demand):
         raise MissingParamsError("some or all parameters are missing")
     if ((datetime.datetime.now() - pre_last_date).total_seconds() / 60 / 60 <= float(TIME_LIMIT)):
         raise CantAggragateError("please wait for more than {0} hour between aggregations".format("TIME_LIMIT"))
-    r = requests.get(url=channel)
-    # extracting data in json format
-    data = r.json()
-    transactions = data["body"]["transactions"]
+    # running with concurrent connections
+    with PoolExecutor(max_workers=20) as executor:
+        for response in executor.map(requests.get(url=channel)):
+            data = response.json()
+            parsed_response = {'balance': data['body']['balance'], 'transactions': data['body']['transactions']}
     if on_demand:
-        return transactions
+        return parsed_response
     else:
-        mysql_connector.set_api_transactions(user_id, transactions)
+        mysql_connector.set_api_transactions(user_id, response)
 
 
 
