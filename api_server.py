@@ -5,6 +5,7 @@ import statement_handler
 from connectors import mysql_connector
 from crontab import CronTab
 import getpass
+from configmodule.config import config
 
 
 app = Flask(__name__)
@@ -51,7 +52,7 @@ def get_user_data():
 username = getpass.getuser()
 cron = CronTab(user=username)
 job = cron.new(command='python cronjob/cronjob.py')
-job.hour.every(4)
+job.hour.every(config['cronjob']['interval'])
 cron.write()
 
 
