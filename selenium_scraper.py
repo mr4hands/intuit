@@ -39,7 +39,7 @@ def fetch_financial_data(pre_last_date, user_id, channel, test=False):
             print(e)
     data['transactions'] = transactions
     if not test:
-        mysql_connector.insert_financial_data,[user_id, channel, datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), data]
+        mysql_connector.insert_financial_data(user_id, channel, datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), data)
     return data
 
 

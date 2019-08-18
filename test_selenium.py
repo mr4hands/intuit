@@ -11,7 +11,7 @@ class MyTestCase(unittest.TestCase):
     def test_fetch_transactions_all_params(self):
         results = selenium_scraper.fetch_financial_data(last_date, user_id="061509949",
                                                         channel="https://dratler.github.io/fake-bank/",
-                                                        test=True)
+                                                        test=False)
         self.assertTrue(type(results) == type({}))
         self.assertTrue(results.get('balance'))
         self.assertTrue(results.get('transactions'))
