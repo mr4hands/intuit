@@ -100,5 +100,9 @@ def get_all_users():
 
 def get_last_aggregation_for_user_channel(user_id, channel):
     mydb = connect_to_db()
-    cursor = mydb.cursor()
-    sql = "SELECT `last_aggregation_date` FROM `user_channel_transactions` WHERE user_id = {0} AND channel = {1}".format(user_id, channel)
+    mycursor = mydb.cursor()
+    sql = "SELECT `last_aggregation_date` FROM `user_channel_transactions` WHERE user_id = {0} AND channel = {1} ORDER BY last_aggregation_date DESC LIMIT 1".format(user_id, channel)
+    mycursor.execute(sql)
+    response = mycursor.fetchone()[0]
+    mydb.close()
+    return response

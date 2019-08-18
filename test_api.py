@@ -52,7 +52,7 @@ class MyTestCase(unittest.TestCase):
                                              test=True)
         # wrong user_id type
         with self.assertRaises(TypeError):
-            api_scraper.fetch_financial_data(pre_last_date=last_date, user_id=61509949,
+            api_scraper.fetch_financial_data(pre_last_date=last_date, user_id=False,
                                              channel="https://qndxqxuz35.execute-api.us-west-2.amazonaws.com/senior-test",
                                              test=True)
         # wrong channel type

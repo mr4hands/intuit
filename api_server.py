@@ -4,6 +4,8 @@ import selenium_scraper
 import statement_handler
 from connectors import mysql_connector
 from crontab import CronTab
+import getpass
+
 
 app = Flask(__name__)
 
@@ -46,8 +48,9 @@ def get_user_data():
     response.append(statement_handler.get_statments(user_id))
     return str(response)
 
-cron = CronTab()
-job = cron.new(command='http://localhost:5000/api/cronjob')
+username = getpass.getuser()
+cron = CronTab(user=username)
+job = cron.new(command='python cronjob/cronjob.py')
 job.hour.every(4)
 cron.write()
 
