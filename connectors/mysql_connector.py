@@ -12,6 +12,7 @@ def connect_to_db():
     except mysql.connector.Error as e:
         return e
 
+
 def get_user_id(name):
     mydb = connect_to_db()
     mycursor = mydb.cursor()
@@ -62,6 +63,7 @@ def insert_financial_data(user_id, channel, aggregation_date, data):
     mydb.commit()
     mydb.close()
 
+
 def insert_financial_data_list(user_id, channel, aggregation_date, data_list):
     mydb = connect_to_db()
     mycursor = mydb.cursor()
@@ -75,6 +77,7 @@ def insert_financial_data_list(user_id, channel, aggregation_date, data_list):
     mydb.commit()
     mydb.close()
 
+
 def get_statements(user_id):
     mydb = connect_to_db()
     cursor = mydb.cursor()
@@ -83,3 +86,19 @@ def get_statements(user_id):
     results = cursor.fetchall()
     mydb.close()
     return results
+
+
+def get_all_users():
+    mydb = connect_to_db()
+    cursor = mydb.cursor()
+    sql = "SELECT id from users"
+    cursor.execute(sql)
+    results = cursor.fetchall()
+    mydb.close()
+    return results
+
+
+def get_last_aggregation_for_user_channel(user_id, channel):
+    mydb = connect_to_db()
+    cursor = mydb.cursor()
+    sql = "SELECT `last_aggregation_date` FROM `user_channel_transactions` WHERE user_id = {0} AND channel = {1}".format(user_id, channel)

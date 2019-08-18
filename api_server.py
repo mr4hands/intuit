@@ -3,6 +3,7 @@ import api_scraper
 import selenium_scraper
 import statement_handler
 from connectors import mysql_connector
+from crontab import CronTab
 
 app = Flask(__name__)
 
@@ -44,3 +45,11 @@ def get_user_data():
     # after getting all channels data, get all statements
     response.append(statement_handler.get_statments(user_id))
     return str(response)
+
+cron = CronTab()
+job = cron.new(command='http://localhost:5000/api/cronjob')
+job.hour.every(4)
+cron.write()
+
+
+
