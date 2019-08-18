@@ -35,7 +35,7 @@ From the pulled directory run the following command:
 'docker-compose up'
 
 ### Using the api
-The system uses python's flask ask it's REST api server on port 5000.
+The system uses python's flask as its REST api server on port 5000.
 In order to use the api on your local machine, go to localhost:5000/api/<desired_path> on your browser.
 
 ### Information for Consumers
