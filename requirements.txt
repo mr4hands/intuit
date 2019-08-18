@@ -6,4 +6,3 @@ flask-restful
 requests
 selenium
 mysql-connector-python
-asyncio
