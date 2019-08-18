@@ -72,7 +72,5 @@ class MyTestCase(unittest.TestCase):
                                                   channel=False,
                                                   test=True)
 
-
-
 if __name__ == '__main__':
     unittest.main()
