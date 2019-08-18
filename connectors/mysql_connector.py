@@ -80,5 +80,6 @@ def get_statements(user_id):
     cursor = mydb.cursor()
     sql = "SELECT statement from user_statements where user_id = {0}".format(user_id)
     cursor.execute(sql)
+    results = cursor.fetchall()
     mydb.close()
-    return cursor.fetchall()
+    return results

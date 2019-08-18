@@ -13,7 +13,7 @@ TIME_LIMIT = config['aggregation']['api_limit']
 def fetch_financial_data(pre_last_date, user_id, channel, test=False):
     if (isinstance(pre_last_date,str)):
         pre_last_date = datetime.datetime.strptime(pre_last_date, '%Y-%m-%d %H:%M:%S')
-    validate_types(user_id, channel, test)
+    validate_types(user_id, channel)
     if user_id == '' or channel == '':
         raise MissingParamsError("some or all parameters are missing")
     if ((datetime.datetime.now() - pre_last_date).total_seconds() / 60 / 60 <= float(TIME_LIMIT)):

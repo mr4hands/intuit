@@ -16,13 +16,14 @@ def on_demand_data_aggregation():
     channel = request_json["channel"]
     transactions = []
     channel_type = mysql_connector.get_channel_type(channel)
-    print(channel_type)
-    if channel_type == "api":
-        transactions = api_scraper.fetch_financial_data(pre_last_date=last_aggregation, test=True, user_id=user_id, channel=channel)
-    elif channel_type == "website":
-        transactions = selenium_scraper.fetch_financial_data(pre_last_date=last_aggregation, test=True, user_id=user_id, channel=channel)
-#   elif channel_type == "statment":
-#TODO
+    if channel_type != []:
+        if channel_type == "api":
+            transactions = api_scraper.fetch_financial_data(pre_last_date=last_aggregation, test=True, user_id=user_id, channel=channel)
+        elif channel_type == "website":
+            transactions = selenium_scraper.fetch_financial_data(pre_last_date=last_aggregation, test=True, user_id=user_id, channel=channel)
+    # if channel type comes back empty from the database, assume it's a scanned statement
+    else:
+        transactions = statement_handler.get_statments(user_id)
     return str(transactions)
 
 @app.route('/api/get_user_data/', methods=['post'])
@@ -34,14 +35,12 @@ def get_user_data():
     user_channels = mysql_connector.get_user_channels(user_id)
     response = []
     for user_channel in user_channels:
-        if channel != []:
-            channel = user_channel[0]
-            channel_type = user_channel[1]
-            if channel_type == "api":
-                response.append(api_scraper.fetch_financial_data(pre_last_date=last_aggregation, user_id=user_id, channel=channel))
-            elif channel_type == "website":
-                response.append(selenium_scraper.fetch_financial_data(pre_last_date=last_aggregation, user_id=user_id, channel=channel))
-        # if channel comes back empty from the database, assume it's a scanned statement
-        else:
-            response.append(statement_handler.get_statment(user_id))
+        channel = user_channel[0]
+        channel_type = user_channel[1]
+        if channel_type == "api":
+            response.append(api_scraper.fetch_financial_data(pre_last_date=last_aggregation, user_id=user_id, channel=channel))
+        elif channel_type == "website":
+            response.append(selenium_scraper.fetch_financial_data(pre_last_date=last_aggregation, user_id=user_id, channel=channel))
+    # after getting all channels data, get all statements
+    response.append(statement_handler.get_statments(user_id))
     return str(response)
