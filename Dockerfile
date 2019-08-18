@@ -1,9 +1,9 @@
-FROM centos:7
-RUN yum update -y && \
-    yum install -y python-pip python-dev
-COPY ./requirements.txt /app/requirements.txt
-WORKDIR /app
+FROM python:3.7-alpine
+WORKDIR /code
+ENV FLASK_APP api_server.py
+ENV FLASK_RUN_HOST 0.0.0.0
+RUN apk add --no-cache gcc musl-dev linux-headers
+COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
-COPY . /app
-ENTRYPOINT [ "python" ]
-CMD [ "api_server.py" ]
+COPY . .
+CMD ["flask", "run"]
