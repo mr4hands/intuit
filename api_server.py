@@ -6,7 +6,7 @@ from connectors import mysql_connector
 from crontab import CronTab
 import getpass
 from configmodule.config import config
-
+from exceptions.exceptions import CantAggragateError
 
 app = Flask(__name__)
 
@@ -42,9 +42,15 @@ def get_user_data():
         channel = user_channel[0]
         channel_type = user_channel[1]
         if channel_type == "api":
-            response.append(api_scraper.fetch_financial_data(pre_last_date=last_aggregation, user_id=user_id, channel=channel))
+            try:
+                response.append(api_scraper.fetch_financial_data(pre_last_date=last_aggregation, user_id=user_id, channel=channel))
+            except CantAggragateError as e:
+                print(e)
         elif channel_type == "website":
-            response.append(selenium_scraper.fetch_financial_data(pre_last_date=last_aggregation, user_id=user_id, channel=channel))
+            try:
+                response.append(selenium_scraper.fetch_financial_data(pre_last_date=last_aggregation, user_id=user_id, channel=channel))
+            except CantAggragateError as e:
+                print(e)
     # after getting all channels data, get all statements
     response.append(statement_handler.get_statments(user_id))
     return str(response)
